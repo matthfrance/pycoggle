@@ -236,13 +236,9 @@ tree_data = {
 
 
 
-username='xxx'
-password='xxx'
-
-oauth_code='xxx'
 diagram_name = "test"
+access_token = 'xxx'
 
-access_token = CoggleApi.get_access_token(oauth_code, username, password, 'http://localhost:8080')
 coggle = CoggleApi(access_token)
 
 mindmap = coggle.diagrams[diagram_name]
@@ -278,3 +274,13 @@ for code, node in tree_data.items():
             else:
                 print('Dependency not found')
 
+    for dependency in node['dependencies']:
+        if not dependency:
+            print('dependency not found')
+            continue
+        text = code + ' ' + node["name"] + ' [#](#{0})'.format(dependency)
+        node["object"].text = text
+
+mindmap.arrange()
+
+exit(0)
