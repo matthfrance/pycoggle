@@ -41,6 +41,9 @@ class CoggleApi:
     def _get(self, verb, params, headers):
         return self._http('GET', verb, params, headers, None)
 
+    def _put(self, verb, params, headers, data):
+        return self._http('PUT', verb, params, headers, data)
+
     def _post(self, verb, params, headers, data):
         return self._http('POST', verb, params, headers, data)
 
@@ -130,6 +133,11 @@ class CoggleDiagram:
         [ node.delete() for node in self.nodes if node.parent is None ]
         self._nodes = []
 
+    def arrange(self):
+        nodes_verb = self._verb + '/nodes'
+        arrange_params = {'action': 'arrange'}
+        self._api._put(verb=nodes_verb, params=arrange_params, headers=None, data=None)
+
     def _find_child_nodes(self, node_json, node):
         for child_json in node_json['children']:
             child_coggle = CoggleNode(self, child_json, node)
@@ -152,6 +160,16 @@ class CoggleNode:
     @property
     def parent(self):
         return self._parent
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        node_text = {"text": value}
+        node_text = json.dumps( node_text )
+        self._diagram._api._put(verb=self._verb, params=None, headers=None, data=node_text)
 
     def delete(self):
         nodes_count = self._diagram._api._delete(verb=self._verb, params=None, headers=None)
